@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+    <head>
+        <title>API</title>
+        <script type="text/javascript">
+            var PROTO = location.protocol;
+            if (!("easyXDM" in this)) {
+                document.write(decodeURIComponent('%3Cscript type="text/javascript" src="' + PROTO + '//easyxdm.net/current/easyXDM.min.js"%3E%3C/script%3E'));
+            }
+            if (!("JSON" in this)) {
+                document.write(decodeURIComponent('%3Cscript type="text/javascript" src="' + PROTO + '//easyxdm.net/current/json2.js"%3E%3C/script%3E'));
+            }
+        </script>
+        <script type="text/javascript">
+            var rpc = new easyXDM.Rpc({
+                local: "name.html"
+            }, {
+                local: {
+                    post: function(url, data, success, error){
+                        easyXDM.ajax({
+                            url: url,
+                            method: "POST",
+                            data: data,
+                            type: "json",
+                            success: success,
+                            error: error
+                        });
+                    },
+                    get: function(url, data, success, error){
+                        easyXDM.ajax({
+                            url: url,
+                            method: "GET",
+                            data: data,
+                            type: "json",
+                            success: success,
+                            error: error
+                        });
+                    }
+                }
+            });
+        </script>
+    </head>
+    <body>
+    </body>
+</html>
