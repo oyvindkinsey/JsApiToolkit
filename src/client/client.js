@@ -10,7 +10,8 @@
         apiServerRoot: /* The root path to the server */ "http://api.example.invalid/",
         apiServerPath: /* The relative path to the server document */ "api.html",
         apiServerHelperPath: /* The relative path to the helper document*/ "name.html",
-        appKey: /* The application key */ ""
+        appKey: /* The application key */ "",
+        useModal: /* Whether to use DHTML dialogs over window.open */ true
     };
     var eventListeners = /* the event listeners */ {};
     var state = {
@@ -70,6 +71,7 @@
     
     function init(){
         rpc = new easyXDM.Rpc({
+            channel: "xyz",
             local: config.localPath,
             remote: config.apiServerRoot + config.apiServerPath,
             remoteHelper: (config.localPath) ? config.apiServerRoot + config.apiServerHelperPath : undef
@@ -94,15 +96,53 @@
         apply(config, map);
         init();
     });
-	
+    
     library.provide("ui", {
-        popup: function(title, url){
-            // open the popup, as this is triggered by a user action, the blocker will allow it
-            window.open("", "api_sign-in", "width=400, height=400");
-            rpc.api("popup", {
-                url: url,
-                target: "api_sign-in"
+        Modal: function(config){
+            var frame = document.createElement("div");
+            apply(frame.style, {
+                position: "absolute",
+                width: "400px",
+                height: "300px",
+                display: "none",
+                border: "1px solid black"
             });
+            
+            var iframe = document.createElement("iframe");
+            iframe.frameBorder = 0; //IE
+            apply(iframe, {
+                border: "0",
+                width: "100%",
+                height: "100%"
+            });
+            iframe.src = config.url;
+            document.body.appendChild(frame);
+            frame.appendChild(iframe);
+            return {
+                show: function(){
+                    frame.style.display = "block";
+                },
+                hide: function(){
+                    frame.style.display = "none";
+                }
+            };
+        },
+        popup: function(title, url){
+            if (config.useModal) {
+                var win = new this.Modal({
+                    title: title,
+                    url: config.apiServerRoot + url + "?target=easyXDM_xyz_provider"
+                });
+                win.show();
+            }
+            else {
+                // open the popup, as this is triggered by a user action, the blocker will allow it
+                window.open("", "api_sign-in", "width=400, height=400");
+                rpc.api("popup", {
+                    url: url,
+                    target: "api_sign-in"
+                });
+            }
         }
     });
     

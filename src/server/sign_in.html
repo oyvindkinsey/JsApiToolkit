@@ -13,7 +13,7 @@
             function signIn(){
                 var username = document.getElementById("txtUsername").value;
                 var password = document.getElementById("txtPassword").value;
-                var win = (target) ? window.parent.frames[target].contentWindow : window.opener;
+                var win = (target) ? window.parent.frames[target] : window.opener;
                 win.signIn(username, password, function(result){
                     if (result) {
                         if (!target) {
