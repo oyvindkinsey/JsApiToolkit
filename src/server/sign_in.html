@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Sign In</title>
+        <script type="text/javascript">
+            var target;
+            (function(){
+                var i = location.search.indexOf("target=");
+                if (i != -1) {
+                    target = location.search.substring(i + 7);
+                }
+            }());
+            function signIn(){
+                var username = document.getElementById("txtUsername").value;
+                var password = document.getElementById("txtPassword").value;
+                var win = (target) ? window.parent.frames[target].contentWindow : window.opener;
+                win.signIn(username, password, function(result){
+                    if (result) {
+                        if (!target) {
+                            window.close();
+                        }
+                    }
+                    else {
+                        // show some kind of status 
+                    }
+                });
+            }
+        </script>
+    </head>
+    <body>
+        Username:
+        <br/>
+        <input type="text" id="txtUsername" value="username"/>
+        <br/>
+        Password
+        <br/>
+        <input type="password" id="txtPassword" value="password"/>
+        <br/>
+        <input type="button" id="btnSignIn" value="Sign In"/>
+        <script type="text/javascript">
+            document.getElementById("btnSignIn").onclick = signIn;
+        </script>
+    </body>
+</html>

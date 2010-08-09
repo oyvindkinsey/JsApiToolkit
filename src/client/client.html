@@ -11,12 +11,20 @@
         <script type="text/javascript">
             Client.init({
                 /* overridde the defaults for testing */
-                apiServerRoot: "http://localhost/Repositories/api/src/server/",
+                apiServerRoot: "http://xdm2/Repositories/api/src/server/",
                 /* the application key */
                 appKey: "A202A28E-A323-11DF-B1CC-DF77DFD72085"
             });
+            Client.feed.attach("feed1");
+            Client.feed.attach("feed2");
         </script>
     </head>
     <body>
+        foo bar
+        <div class="feed" id="feed1">
+        </div>
+        foo bar
+        <div class="feed" id="feed2">
+        </div>
     </body>
 </html>
