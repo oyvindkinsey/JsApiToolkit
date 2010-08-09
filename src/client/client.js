@@ -23,7 +23,7 @@
     // in production, these should be prepended and minified too
     var dependencies = /* These are the dependencies that we need to have present */ {
         "JSON": location.protocol + "easyxdm.net/current/json2.js",
-        "easyXDM": location.protocol + "//easyxdm.net/current/easyXDM.min.js"
+        "easyXDM": location.protocol + "//easyxdm.net/dev/easyXDM.min.js"
     };
     for (var dependency in dependencies) {
         if (dependencies.hasOwnProperty(dependency) && !(dependency in this)) {
