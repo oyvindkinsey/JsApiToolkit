@@ -3,6 +3,19 @@
 
 var hop = Object.prototype.hasOwnProperty;
 
+// Methods for feature testing -  From http://peter.michaux.ca/articles/feature-detection-state-of-the-art-browser-scripting
+function isHostMethod(object, property){
+    var t = typeof object[property];
+    return t == 'function' ||
+    (!!(t == 'object' && object[property])) ||
+    t == 'unknown';
+}
+
+function isHostObject(object, property){
+    return !!(typeof(object[property]) == 'object' && object[property]);
+}
+
+// end 
 
 var library = /* this is the private interface */ {
     version: "%%version%%",
