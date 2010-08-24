@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="JsApiToolkit" default="build" basedir=".">
+	<property name="project.src.dir" value="src"/>
+	<property name="project.build.artifactdir" value="./artifacts/"/>
+	<property name="project.build.version" value="0.1"/>
+	
+	<!-- Setup classpath for js-build-tools ant tasks -->
+	<path id="js-build-tasks.classpath">
+		<pathelement location="."/>
+		<fileset dir="tools/js-build-tools/lib">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+	
+	<taskdef name="preprocess" classname="com.moxiecode.ant.tasks.PreProcessTask" classpathref="js-build-tasks.classpath" loaderref="js-build-tasks.classpath.loader" />
+	<taskdef name="yuicompress" classname="com.moxiecode.ant.tasks.YuiCompressTask" classpathref="js-build-tasks.classpath" loaderref="js-build-tasks.classpath.loader" />
+	<taskdef name="jslint" classname="com.googlecode.jslint4java.ant.JSLintTask" classpath="tools/jslint4java-1.4.1/jslint4java-1.4.1.jar" />
+	
+	<target name="clean" depends="" description="Cleans up the project from temporary files">
+		<delete dir="work" quiet="true"/>
+		<delete dir="${project.build.artifactdir}v${project.build.version}" quiet="true"/>
+	</target>
+	
+	<target name="jslint">
+		<jslint>
+			<formatter type="plain" />
+			<fileset dir="${project.src.dir}/client/" includes="*.js"/>
+		</jslint>
+	</target>
+	
+	<target name="build" depends="clean,jslint">
+		<buildnumber/>
+		<mkdir dir="work"/>
+		
+		<concat destfile="work/JsApiToolkit.combined.js">	
+			<fileset dir="." includes="${project.src.dir}/client/head.js.txt" />
+			<fileset dir="." includes="${project.src.dir}/client/core.js" />
+			<fileset dir="." includes="${project.src.dir}/client/modules/*.js" />
+			<fileset dir="." includes="${project.src.dir}/client/tail.js.txt" />
+		</concat>
+		
+		<replace file="work/JsApiToolkit.combined.js" token="%%version%%" value="${project.build.version}.${build.number}"/>
+		
+		<!-- Process pre proccesing instructions like #if/#endif etc -->
+		<preprocess infile="work/JsApiToolkit.combined.js" outfile="work/JsApiToolkit.js"/>
+		<preprocess infile="work/JsApiToolkit.combined.js" outfile="work/JsApiToolkit.debug.js" defines="debug"/>
+		
+		<!-- Compress the file using the YUI Compressor -->
+		<yuicompress infile="work/JsApiToolkit.js" outfile="work/JsApiToolkit.min.js" />
+		
+		<!-- concat header files -->
+		<!--
+		<concat destfile="${project.build.artifactdir}v${project.build.version}/easyXDM.js">
+			<fileset dir="." includes="${project.src.dir}/header.js" />
+			<fileset dir="." includes="work/easyXDM.js" />
+		</concat>
+		<concat destfile="${project.build.artifactdir}v${project.build.version}/easyXDM.debug.js">
+			<fileset dir="." includes="${project.src.dir}/header.js" />
+			<fileset dir="." includes="work/easyXDM.debug.js" />
+		</concat>
+		<concat destfile="${project.build.artifactdir}v${project.build.version}/easyXDM.min.js">
+			<fileset dir="." includes="${project.src.dir}/header.js" />
+			<fileset dir="." includes="work/easyXDM.min.js" />
+		</concat>
+		
+		<concat destfile="${project.build.artifactdir}v${project.build.version}/easyXDM.Widgets.js">
+			<fileset dir="." includes="${project.src.dir}/header.js" />
+			<fileset dir="." includes="work/easyXDM.Widgets.js" />
+		</concat>
+		<concat destfile="${project.build.artifactdir}v${project.build.version}/easyXDM.Widgets.debug.js">
+			<fileset dir="." includes="${project.src.dir}/header.js" />
+			<fileset dir="." includes="work/easyXDM.Widgets.debug.js" />
+		</concat>
+		<concat destfile="${project.build.artifactdir}v${project.build.version}/easyXDM.Widgets.min.js">
+			<fileset dir="." includes="${project.src.dir}/header.js" />
+			<fileset dir="." includes="work/easyXDM.Widgets.min.js" />
+		</concat>
+		-->
+		<delete file="work/JsApiToolkit.combined.js" quiet="true"/>
+		
+		<copy todir="${project.build.artifactdir}v${project.build.version}">
+			<fileset dir="work"/>
+		</copy>
+	</target>
+</project>
