@@ -97,7 +97,7 @@ function init(){
     rpc = new easyXDM.Rpc({
         channel: "xyz",
         local: library.config.localPath,
-        remote: library.config.apiServerRoot + library.config.apiServerPath,
+        remote: library.config.apiServerRoot + library.config.apiServerPath + "?appKey=" + encodeURIComponent(library.config.appKey),
         remoteHelper: (library.config.localPath) ? library.config.apiServerRoot + library.config.apiServerHelperPath : undefined
     }, {
         local: {

@@ -16,7 +16,8 @@
         </script>
         <script type="text/javascript">
             var state = {
-                signed_in: false
+                signed_in: false,
+                appKey: easyXDM.query.appKey
             };
             var popup;
             var serverRoot = location.href.substring(0, location.href.lastIndexOf("/") + 1);
@@ -40,11 +41,14 @@
                             // this must be handled on the server
                             easyXDM.ajax({
                                 method: "POST",
+                                headers: {
+                                    "auth-appKey": state.appKey
+                                },
                                 data: {
                                     jsonrpc: "2.00",
                                     id: ++rpcId,
                                     method: methodName,
-                                    params: args
+                                    params: JSON.stringify(args)
                                 },
                                 url: "json-rpc.aspx" /* "json-rpc.php" */,
                                 type: "json",
@@ -72,14 +76,17 @@
             function signIn(username, password, fn){
                 easyXDM.ajax({
                     method: "POST",
+                    headers: {
+                        "auth-appKey": state.appKey
+                    },
                     data: {
                         jsonrpc: "2.00",
                         id: ++rpcId,
                         method: "auth.authenticate",
-                        params: {
+                        params: JSON.stringify({
                             username: username,
                             password: password
-                        }
+                        })
                     },
                     url: "json-rpc.aspx" /* "json-rpc.php" */,
                     type: "json",
