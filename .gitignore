@@ -1,3 +1,5 @@
 artifacts/
 work/
 build.number
+.tmp_*
+build.secret.properties
