@@ -3,13 +3,16 @@
     <head>
         <title>API</title>
         <script type="text/javascript">
-            var PROTO = location.protocol;
-            if (!("easyXDM" in this)) {
-                document.write(decodeURIComponent('%3Cscript type="text/javascript" src="' + PROTO + '//easyxdm.net/dev/easyXDM.min.js"%3E%3C/script%3E'));
+            var dependencies = /* These are the dependencies that we need to have present */ {
+                "JSON": "../../lib/json2.js",
+                "easyXDM": "../../lib/easyXDM.min.js"
+            };
+            for (var dependency in dependencies) {
+                if (dependencies.hasOwnProperty(dependency) && !(dependency in this)) {
+                    document.write(decodeURIComponent('%3Cscript type="text/javascript" src="' + dependencies[dependency] + '"%3E%3C/script%3E'));
+                }
             }
-            if (!("JSON" in this)) {
-                document.write(decodeURIComponent('%3Cscript type="text/javascript" src="' + PROTO + '//easyxdm.net/current/json2.js"%3E%3C/script%3E'));
-            }
+            // #endif
         </script>
         <script type="text/javascript">
             var state = {
@@ -62,10 +65,10 @@
                     }
                 },
                 remote: {
-                    raiseEvent: {}
+                    publish: {}
                 }
             });
-            rpc.raiseEvent("auth-status-change", state.signed_in);
+            rpc.publish("auth.change", state.signed_in);
             function signIn(username, password, fn){
                 easyXDM.ajax({
                     method: "POST",
@@ -83,7 +86,7 @@
                     success: function(response){
                         fn(true);
                         state.signed_in = true;
-                        rpc.raiseEvent("auth-status-change", true);
+                        rpc.publish("auth.change", true);
                     },
                     error: function(response){
                         fn(false);

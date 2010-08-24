@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+    <head>
+        <title>API</title>
+        <script type="text/javascript" src="../client/core.js">
+        </script>
+        <script type="text/javascript" src="../client/modules/ui.js">
+        </script>
+        <script type="text/javascript" src="../client/modules/api.js">
+        </script>
+        <script type="text/javascript" src="../client/modules/feed.js">
+        </script>
+        <script type="text/javascript">
+            var root = location.href.substring(0, location.href.indexOf("/src/") + 1), remoteRoot = root.replace("xdm1", "xdm2");
+            
+            library.init({
+                /* override the defaults for testing */
+                apiServerRoot: remoteRoot + "src/server/",
+                apiServerHelperPath: /* The relative path to the helper document*/ "../../lib/name.html",
+                /* the application key */
+                appKey: "A202A28E-A323-11DF-B1CC-DF77DFD72085"
+            });
+            library.feed.attach("feed1");
+            library.feed.attach("feed2");
+        </script>
+    </head>
+    <body>
+        foo bar
+        <div class="feed" id="feed1">
+        </div>
+        foo bar
+        <div class="feed" id="feed2">
+        </div>
+    </body>
+</html>

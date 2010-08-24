@@ -1,0 +1,5 @@
+/* ---------------------------------------* 
+ * Export the library to the global scope *
+ * ---------------------------------------*/
+this[library.name] = library;
+}(window, document /*, undefined*/));
