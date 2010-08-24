@@ -71,7 +71,11 @@ function publish(eventName, args){
             listeners[i](args);
         } 
         catch (e) {
-            throw e;
+            (function(e){
+                setTimeout(function(){
+                    throw e;
+                }, 0);
+            }(e));
         }
     }
 }
