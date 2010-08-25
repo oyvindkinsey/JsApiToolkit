@@ -29,7 +29,7 @@ The client is the main library that your users will include on their sites. This
 How to get started
 ==================
 * Modify main configuration in <code>/src/client/core.js</code> so that it reflects the desired name and location of the server components.  
-* If necessary, modify the XDM api. The base implementation expose a generic <code>api</code> method on the server, and a <code>publish</code> method on the client for event notifying.
+* If necessary, modify the XDM api. The base implementation exposes a generic <code>api</code> method on the server, and a <code>publish</code> method on the client for event notifications.
 * Add your custom modules to <code>/src/client/modules/</code> following the pattern used in the existing modules.
 * Build the client library using <code>ant build</code>.
 * Deploy! :)
