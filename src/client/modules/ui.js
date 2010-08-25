@@ -5,7 +5,7 @@
 (function(library){
     var dom = library.dom;
     var zIndex = 999;
-    var shimEl, win;
+    var shimEl, win, popup;
     
     library.css.register("ui-modal", {
         "shim": {
@@ -92,20 +92,16 @@
     
     library.provide("ui", {
         popup: function(title, url){
+            url = library.config.apiServerRoot + url + "?target=easyXDM_xyz_provider";
             if (library.config.useModal) {
-            
                 if (!win) {
                     win = new ModalWindow();
                 }
-                win.show(title, library.config.apiServerRoot + url + "?target=easyXDM_xyz_provider");
+                win.show(title, url);
             }
             else {
                 // open the popup, as this is triggered by a user action, the blocker will allow it
-                window.open("", "api_sign-in", "width=400, height=400");
-                rpc.api("popup", {
-                    url: url,
-                    target: "api_sign-in"
-                });
+                popup = window.open(url, library.config.name + "_popup", "width=400, height=400");
             }
         }
     });
@@ -114,8 +110,17 @@
         library.ui.popup("Sign in", "sign_in.html");
     });
     subscribe("auth.change", function(signed_in){
-        if (signed_in && win) {
-            win.hide();
+        if (signed_in) {
+            if (win) {
+                win.hide();
+            }
+            else if (popup) {
+                try {
+                    popup.close();
+                } 
+                catch (e1) {
+                }
+            }
         }
     });
 }(library));

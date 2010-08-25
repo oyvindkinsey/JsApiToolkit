@@ -4,16 +4,37 @@
         <title>Sign In</title>
         <script type="text/javascript">
             var target;
-            (function(){
-                var i = location.search.indexOf("target=");
-                if (i != -1) {
-                    target = location.search.substring(i + 7);
+            
+            var i = location.search.indexOf("target=");
+            if (i != -1) {
+                target = location.search.substring(i + 7);
+            }
+            var win;
+            if (window.opener) {
+                try {
+                    if (window.opener.signIn) {
+                        win = window.opener;
+                    }
+                } 
+                catch (e1) {
                 }
-            }());
+                try {
+                    if (!win && window.opener.frames[target] && window.opener.frames[target].signIn) {
+                        win = window.opener.frames[target];
+                    }
+                } 
+                catch (e2) {
+                }
+            }
+            
+            if (!win) {
+                win = window.parent.frames[target];
+            }
+            
             function signIn(){
                 var username = document.getElementById("txtUsername").value;
                 var password = document.getElementById("txtPassword").value;
-                var win = (target) ? window.parent.frames[target] : window.opener;
+                
                 win.signIn(username, password, function(result){
                     if (result) {
                         if (!target) {

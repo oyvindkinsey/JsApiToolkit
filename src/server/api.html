@@ -22,11 +22,7 @@
             var popup;
             var serverRoot = location.href.substring(0, location.href.lastIndexOf("/") + 1);
             
-            var handlers = {
-                "popup": function(args, fn){
-                    popup = window.open(serverRoot + args.url, args.target);
-                }
-            };
+            var handlers = {};
             var rpcId = 0;
             var rpc = new easyXDM.Rpc({
                 local: "name.html"
