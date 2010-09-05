@@ -107,7 +107,7 @@
     });
     // subscribe to the 'authencitate' event so that we can give the user the option to sign in
     subscribe("auth.signin", function(){
-        library.ui.popup("Sign in", "sign_in.html");
+        library.ui.popup("Sign in", "../sign_in.html");
     });
     subscribe("auth.change", function(signed_in){
         if (signed_in) {

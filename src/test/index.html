@@ -15,7 +15,8 @@
             
             library.init({
                 /* override the defaults for testing */
-                apiServerRoot: remoteRoot + "src/server/",
+                apiServerRoot: remoteRoot + "src/server/dotnet/",
+                apiServerPath: "api.aspx",
                 apiServerHelperPath: /* The relative path to the helper document*/ "../../lib/name.html",
                 /* the application key */
                 appKey: "A202A28E-A323-11DF-B1CC-DF77DFD72085"
@@ -25,6 +26,19 @@
         </script>
     </head>
     <body>
+        <div style="border:1px solid black;padding:10px;">
+            This demo shows a simple feed being displayed relating to the user. 
+            <br/>
+            In this case the user isn't initially signed in to the provider and so is met with a sign-in button.
+            <br/>
+            Once signed in, the feed is retrieved and displayed.
+            <br/>
+            <br/>
+            If you refresh, you will see that you are still signed in, and that the feed is displayed as exptected. Clear your cookies, and you will be forced to sign in again.
+            <br/>
+            <b>Note</b>
+            that all the authentication is happending at the provider - the consumer is only acting on events.
+        </div>
         foo bar
         <div class="feed" id="feed1">
         </div>
