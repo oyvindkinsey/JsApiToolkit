@@ -16,6 +16,9 @@
                     case "sign-in":
                         PageMethods.SignIn(appKey, args.username, args.password, fn);
                         break;
+                    case "sign-out":
+                        PageMethods.SignOut(appKey, fn);
+                        break;
                     case "feed.get":
                         PageMethods.GetFeed(appKey, fn);
                         break;

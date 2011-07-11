@@ -23,6 +23,19 @@
             });
             library.feed.attach("feed1");
             library.feed.attach("feed2");
+            
+            library.events.subscribe("auth.change", function(signed_in){
+                if (signed_in) {
+                    var btn = document.createElement("button");
+                    btn.innerHTML = "Sign out";
+                    btn.onclick = function(){
+                        library.api("sign-out", null, function(){
+                            btn.parentNode.removeChild(btn);
+                        });
+                    };
+                    document.getElementById("auth").appendChild(btn);
+                }
+            });
         </script>
     </head>
     <body>
@@ -39,11 +52,22 @@
             <b>Note</b>
             that all the authentication is happending at the provider - the consumer is only acting on events.
         </div>
+        <div id="auth">
+            <input type="checkbox" id="chkUsePopup"/>
+            <label for="chkUsePopup">
+                Use popup for interaction
+            </label>
+        </div>
         foo bar
         <div class="feed" id="feed1">
         </div>
         foo bar
         <div class="feed" id="feed2">
         </div>
+        <script type="text/javascript">
+            library.dom.on(document.getElementById("chkUsePopup"), "change", function(){
+                library.config.useModal = !this.checked;
+            });
+        </script>
     </body>
 </html>

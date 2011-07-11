@@ -26,6 +26,15 @@ public partial class Api : System.Web.UI.Page
         }
         return apiResponse;
     }
+	
+    [WebMethod]
+    public static ApiResponse SignOut(String appKey)
+    {
+        ApiResponse apiResponse = new ApiResponse();
+        apiResponse.status = "ok";
+        System.Web.Security.FormsAuthentication.SignOut();
+        return apiResponse;
+    }
 
     [WebMethod]
     public static GenericApiResponse<Feed> GetFeed(String appKey)

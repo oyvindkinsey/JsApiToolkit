@@ -37,9 +37,7 @@
                 
                 win.signIn(username, password, function(result){
                     if (result) {
-                        if (!target) {
-                            window.close();
-                        }
+                        window.close();
                     }
                     else {
                         // show some kind of status 

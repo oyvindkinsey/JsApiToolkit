@@ -175,12 +175,19 @@ library.provide("css", {
 });
 
 library.provide("api", function(method, data, fn){
-    if (method == "sign-in") {
-        publish("auth.signin");
-    }
-    else {
-        // pass it to the provider
-        rpc.api(method, data, fn);
+    switch (method) {
+        case "sign-in":
+            publish("auth.signin");
+            break;
+        case "sign-out":
+            rpc.api("sign-out", data, function(){
+                publish("auth.change", false);
+                fn();
+            });
+            break;
+        default:
+            // pass it to the provider
+            rpc.api(method, data, fn);
     }
 });
 
