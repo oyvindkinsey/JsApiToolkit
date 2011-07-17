@@ -1,13 +1,13 @@
 /*global library, rpc, subscribe, JSON */
-(function(library){
+( function(library) {
     library.provide("feed", {
-        init: function(){
+        init: function() {
             this.elements = [];
             var that = this;
-            subscribe("auth.change", function(signed_in){
+            subscribe("auth.change", function(signed_in) {
                 var feedEl, i, len;
                 if (signed_in) {
-                    rpc.api("feed.get", null, function(response){
+                    rpc.api("feed.get", null, function(response) {
                         if (response.status == "ok") {
                             var feed = JSON.stringify(response.data);
                             for (i = 0, len = that.elements.length; i < len; i++) {
@@ -26,7 +26,7 @@
             });
             this._init = true;
         },
-        attach: function(id){
+        attach: function(id) {
             if (!this._init) {
                 this.init();
             }

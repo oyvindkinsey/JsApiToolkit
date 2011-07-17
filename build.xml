@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="JsApiToolkit" default="build" basedir=".">
+<project name="library" default="build" basedir=".">
 	<property name="project.src.dir" value="src"/>
 	<property name="project.build.artifactdir" value="./artifacts/"/>
 	<property name="project.build.version" value="0.1"/>
@@ -32,51 +32,27 @@
 		<buildnumber/>
 		<mkdir dir="work"/>
 		
-		<concat destfile="work/JsApiToolkit.combined.js">	
+		<concat destfile="work/library.combined.js">	
 			<fileset dir="." includes="${project.src.dir}/client/head.js.txt" />
+			<fileset dir="." includes="${project.src.dir}/lib/json2.js" />
+			<fileset dir="." includes="${project.src.dir}/lib/easyXDM.min.js" />
 			<fileset dir="." includes="${project.src.dir}/client/core.js" />
 			<fileset dir="." includes="${project.src.dir}/client/modules/*.js" />
+			<fileset dir="." includes="${project.src.dir}/client/libraries/example/modules/*.js" />
+			<fileset dir="." includes="${project.src.dir}/client/libraries/example/*.js" />
 			<fileset dir="." includes="${project.src.dir}/client/tail.js.txt" />
 		</concat>
 		
-		<replace file="work/JsApiToolkit.combined.js" token="%%version%%" value="${project.build.version}.${build.number}"/>
+		<replace file="work/library.combined.js" token="%%version%%" value="${project.build.version}.${build.number}"/>
 		
 		<!-- Process pre proccesing instructions like #if/#endif etc -->
-		<preprocess infile="work/JsApiToolkit.combined.js" outfile="work/JsApiToolkit.js"/>
-		<preprocess infile="work/JsApiToolkit.combined.js" outfile="work/JsApiToolkit.debug.js" defines="debug"/>
+		<preprocess infile="work/library.combined.js" outfile="work/library.js"/>
+		<preprocess infile="work/library.combined.js" outfile="work/library.debug.js" defines="debug"/>
 		
 		<!-- Compress the file using the YUI Compressor -->
-		<yuicompress infile="work/JsApiToolkit.js" outfile="work/JsApiToolkit.min.js" />
-		
-		<!-- concat header files -->
-		<!--
-		<concat destfile="${project.build.artifactdir}v${project.build.version}/easyXDM.js">
-			<fileset dir="." includes="${project.src.dir}/header.js" />
-			<fileset dir="." includes="work/easyXDM.js" />
-		</concat>
-		<concat destfile="${project.build.artifactdir}v${project.build.version}/easyXDM.debug.js">
-			<fileset dir="." includes="${project.src.dir}/header.js" />
-			<fileset dir="." includes="work/easyXDM.debug.js" />
-		</concat>
-		<concat destfile="${project.build.artifactdir}v${project.build.version}/easyXDM.min.js">
-			<fileset dir="." includes="${project.src.dir}/header.js" />
-			<fileset dir="." includes="work/easyXDM.min.js" />
-		</concat>
-		
-		<concat destfile="${project.build.artifactdir}v${project.build.version}/easyXDM.Widgets.js">
-			<fileset dir="." includes="${project.src.dir}/header.js" />
-			<fileset dir="." includes="work/easyXDM.Widgets.js" />
-		</concat>
-		<concat destfile="${project.build.artifactdir}v${project.build.version}/easyXDM.Widgets.debug.js">
-			<fileset dir="." includes="${project.src.dir}/header.js" />
-			<fileset dir="." includes="work/easyXDM.Widgets.debug.js" />
-		</concat>
-		<concat destfile="${project.build.artifactdir}v${project.build.version}/easyXDM.Widgets.min.js">
-			<fileset dir="." includes="${project.src.dir}/header.js" />
-			<fileset dir="." includes="work/easyXDM.Widgets.min.js" />
-		</concat>
-		-->
-		<delete file="work/JsApiToolkit.combined.js" quiet="true"/>
+		<yuicompress infile="work/library.js" outfile="work/library.min.js" />
+
+		<delete file="work/library.combined.js" quiet="true"/>
 		
 		<copy todir="${project.build.artifactdir}v${project.build.version}">
 			<fileset dir="work"/>

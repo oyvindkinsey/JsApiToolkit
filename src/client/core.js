@@ -4,56 +4,49 @@
 var hop = Object.prototype.hasOwnProperty;
 
 // Methods for feature testing -  From http://peter.michaux.ca/articles/feature-detection-state-of-the-art-browser-scripting
-function isHostMethod(object, property){
+function isHostMethod(object, property) {
     var t = typeof object[property];
     return t == 'function' ||
     (!!(t == 'object' && object[property])) ||
     t == 'unknown';
 }
 
-function isHostObject(object, property){
+function isHostObject(object, property) {
     return !!(typeof(object[property]) == 'object' && object[property]);
 }
 
-// end 
+// end
 
-var library = /* this is the private interface */ {
+var library = /* this is the private interface */
+{
     version: "%%version%%",
     name: "library",
-    config: /* The main configuration */ {
+    config: /* The main configuration */
+    {
         apiServerRoot: /* The root path to the server */ "http://api.example.invalid/",
         apiServerPath: /* The relative path to the server document */ "api.html",
-        apiServerHelperPath: /* The relative path to the helper document*/ "name.html",
+        apiServerResourcePath: /* The relative path to resource directory*/ "resources/",
         appKey: /* The application key */ "",
         useModal: /* Whether to use DHTML dialogs over window.open */ true,
         cssPrefix: "library"
     }
 };
+
+library.easyXDM = easyXDM.noConflict(library.name);
+
 var rpc; /* The easyXDM rpc object */
-var eventListeners = /* the event listeners */ {};
+var eventListeners = /* the event listeners */
+{
+};
 var state = {
     initialized: false,
     signed_in: false
 };
 
-// #ifdef debug
-library.config.isDebug = true;
-// in production, these should be prepended and minified too
-var dependencies = /* These are the dependencies that we need to have present */ {
-    "JSON": "../../lib/json2.js",
-    "easyXDM": "../../lib/easyXDM.min.js"
-};
-for (var dependency in dependencies) {
-    if (hop.call(dependencies, dependency) && !(dependency in this)) {
-        document.write(decodeURIComponent('%3Cscript type="text/javascript" src="' + dependencies[dependency] + '"%3E%3C/script%3E'));
-    }
-}
-// #endif
-
-/* ---------------------------------------* 
+/* ---------------------------------------*
  * Utilities                              *
  * ---------------------------------------*/
-function apply(target, source){
+function apply(target, source) {
     for (var key in source) {
         if (hop.call(source, key)) {
             target[key] = source[key];
@@ -61,47 +54,51 @@ function apply(target, source){
     }
 }
 
-function copy(source){
+function copy(source) {
     var target = {};
     apply(source, target);
     return target;
 }
 
-function subscribe(eventName, eventHandler, context){
+function subscribe(eventName, eventHandler, context) {
     var listeners = eventListeners[eventName] || (eventListeners[eventName] = []);
     if (context) {
-        eventHandler = function(args){
+        eventHandler = function(args) {
             eventHandler.call(context, args);
         };
     }
     listeners.push(eventHandler);
 }
 
-function publish(eventName, args){
+function publish(eventName, args) {
     var listeners = eventListeners[eventName] || (eventListeners[eventName] = []);
+    function throwError(e) {
+        setTimeout( function() {
+            throw e;
+        }, 0);
+    }
+
     for (var i = 0, len = listeners.length; i < len; i++) {
         try {
             listeners[i](args);
-        } 
-        catch (e) {
-            (function(e){
-                setTimeout(function(){
-                    throw e;
-                }, 0);
-            }(e));
+        } catch (e) {
+            throwError(e);
         }
     }
 }
 
-function init(){
-    rpc = new easyXDM.Rpc({
+function init() {
+    rpc = new library.easyXDM.Rpc({
         channel: "xyz",
         local: library.config.localPath,
         remote: library.config.apiServerRoot + library.config.apiServerPath + "?appKey=" + encodeURIComponent(library.config.appKey),
-        remoteHelper: (library.config.localPath) ? library.config.apiServerRoot + library.config.apiServerHelperPath : undefined
+        swf: library.config.apiServerRoot + library.config.apiServerResourcePath + "easyxdm.swf"
     }, {
         local: {
-            publish: publish
+            publish: publish,
+            closeUI: function(notifyOnly) {
+               publish("ui.hide", notifyOnly);
+            }
         },
         remote: {
             api: {}
@@ -109,14 +106,16 @@ function init(){
     });
 }
 
-/* ---------------------------------------* 
+/* ---------------------------------------*
  * Register event listeners               *
  * ---------------------------------------*/
-subscribe("auth.change", function(signed_in){
+subscribe("auth.change", function(signed_in) {
     state.signed_in = signed_in;
+    if (signed_in) {
+        publish("ui.hide");
+    }
 });
-
-library.provide = function(memberName, member){
+library.provide = function(memberName, member) {
     if (memberName in this) {
         apply(this[memberName], member);
     }
@@ -124,24 +123,22 @@ library.provide = function(memberName, member){
         this[memberName] = member;
     }
 };
-
-/* ---------------------------------------* 
+/* ---------------------------------------*
  * Add the core modules                    *
  * ---------------------------------------*/
-library.provide("init", function(map){
+library.provide("init", function(map) {
     apply(library.config, map);
     this.css.apply();
     init();
 });
-
 library.provide("css", {
     _css: [],
-    register: function(key, rules){
+    register: function(key, rules) {
         if (!(key in this._css)) {
             this._css[key] = rules;
         }
     },
-    apply: function(){
+    apply: function() {
         var styles = [], module, block, rules;
         for (var key in this._css) {
             if (hop.call(this._css, key)) {
@@ -163,7 +160,7 @@ library.provide("css", {
         styles = styles.join("\n");
         var style = document.createElement("style");
         style.setAttribute("type", "text/css");
-        
+
         if (style.styleSheet) {
             style.styleSheet.cssText = styles;
         }
@@ -174,23 +171,19 @@ library.provide("css", {
     }
 });
 
-library.provide("api", function(method, data, fn){
+library.provide("api", function(method, data, fn) {
     switch (method) {
         case "sign-in":
             publish("auth.signin");
             break;
         case "sign-out":
-            rpc.api("sign-out", data, function(){
-                publish("auth.change", false);
-                fn();
-            });
+            publish("auth.signout");
             break;
         default:
             // pass it to the provider
             rpc.api(method, data, fn);
     }
 });
-
 library.provide("events", {
     subscribe: subscribe
 });

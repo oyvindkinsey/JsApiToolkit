@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Sign In</title>
+        <link rel="stylesheet" type="text/css" href="../ui.css"/>
+        <style type="text/css">
+            .popup #btnClose {
+                display:none;
+            }
+            
+        </style>
+    </head>
+    <body>
+        <div id="dialog">
+            <header>
+                <button id="btnClose">
+                    Close
+                </button>
+            </header>
+
+            Username:
+            <br/>
+            <input type="text" id="txtUsername" value="username"/>
+            <br/>
+            Password
+            <br/>
+            <input type="password" id="txtPassword" value="password"/>
+            <br/>
+            <input type="button" id="btnSignIn" value="Sign In"/>
+            <br style="clear:both"/>
+        </div>
+        <script type="text/javascript" src="../ui.js"></script>
+        <script type="text/javascript">
+            // set the css class
+            document.body.className += " " + mode;
+
+            document.getElementById("btnSignIn").onclick = function () {
+                var username = document.getElementById("txtUsername").value;
+                var password = document.getElementById("txtPassword").value;
+
+                api.auth({
+                    username:username,
+                    password:password
+                }, function(result) {
+                    if (result) {
+                        window.close();
+                    }
+                    else {
+                        // show some kind of status
+                    }
+                });
+            };
+            document.getElementById("btnClose").onclick = function() {
+                api.hide();
+            };
+        </script>
+    </body>
+</html>

@@ -2,11 +2,11 @@
 
 // requires("dom");
 
-(function(library){
+( function(library) {
     var dom = library.dom;
     var zIndex = 999;
     var shimEl, win, popup;
-    
+
     library.css.register("ui-modal", {
         "shim": {
             position: "absolute",
@@ -39,65 +39,68 @@
             height: "300px"
         }
     });
-    
-    function ModalWindow(config){
+
+    function ModalWindow(config) {
         var pub;
         var frameEl = dom.create({
             cls: library.config.cssPrefix + "-ui-modal-frame"
         }, document.body);
-        var titleEl = dom.create({
-            cls: library.config.cssPrefix + "-ui-modal-title"
-        }, frameEl);
         var iframeEl = dom.create({
             tag: "iframe",
             frameBorder: 0 //IE
         }, frameEl);
-        var closeBtn = dom.create({
-            tag: "button",
-            html: "Close",
-            listeners: {
-                click: function(){
-                    pub.hide();
-                }
-            }
-        }, frameEl);
-        
+
         return (pub = {
-            show: function(title, url){
-                if (!shimEl) {
-                    shimEl = dom.create({
-                        cls: library.config.cssPrefix + "-ui-modal-shim"
-                    }, document.body);
+                show: function(url) {
+                    iframeEl.src = url;
+                    //position
+
+                    frameEl.style.display = "block";
+
+                    var vpSize = dom.getSize(), winSize = dom.getSize(frameEl);
+                    apply(frameEl.style, {
+                        left: ((vpSize.width - winSize.width) / 2) + "px",
+                        top: ((vpSize.height - winSize.height) / 2) + "px"
+                    });
+                },
+                hide: function() {
+                    frameEl.style.display = "none";
+                },
+                resize: function(width, height) {
+                    frameEl.style.width = width + "px";
+                    frameEl.style.height = height + "px";
                 }
-                iframeEl.src = url;
-                titleEl.innerHTML = title;
-                //position
-                
-                shimEl.style.display = "block";
-                frameEl.style.display = "block";
-                
-                var vpSize = dom.getSize(), winSize = dom.getSize(frameEl);
-                apply(frameEl.style, {
-                    left: ((vpSize.width - winSize.width) / 2) + "px",
-                    top: ((vpSize.height - winSize.height) / 2) + "px"
-                });
-            },
-            hide: function(){
-                shimEl.style.display = "none";
-                frameEl.style.display = "none";
-            }
-        });
+            });
     }
+
     /*********************/
-    
+    function hide() {
+        if (win) {
+            win.hide();
+        }
+        else if (popup) {
+            try {
+                popup.close();
+            } catch (e1) {
+            }
+        }
+    }
+
     library.provide("ui", {
-        popup: function(title, url){
-            url = library.config.apiServerRoot + url + "?target=easyXDM_xyz_provider";
+        popup: function(url) {
+            if (!shimEl) {
+                shimEl = dom.create({
+                    cls: library.config.cssPrefix + "-ui-modal-shim"
+                }, document.body);
+            }
+
+            shimEl.style.display = "block";
+            url = library.config.apiServerRoot + url + "?target=easyXDM_" + library.name + "_xyz_provider";
             if (library.config.useModal) {
                 if (!win) {
                     win = new ModalWindow();
                 }
-                win.show(title, url);
+                win.show(url);
             }
             else {
                 // open the popup, as this is triggered by a user action, the blocker will allow it
@@ -105,22 +108,17 @@
             }
         }
     });
-    // subscribe to the 'authencitate' event so that we can give the user the option to sign in
-    subscribe("auth.signin", function(){
-        library.ui.popup("Sign in", "../sign_in.html");
+
+    subscribe("ui.hide", function(notifyOnly) {
+        shimEl.style.display = "none";
+        if (!notifyOnly) {
+            hide();
+        }
     });
-    subscribe("auth.change", function(signed_in){
-        if (signed_in) {
-            if (win) {
-                win.hide();
-            }
-            else if (popup) {
-                try {
-                    popup.close();
-                } 
-                catch (e1) {
-                }
-            }
+    subscribe("ui.resize", function(box) {
+        // the resize is only handled here for modal dialogs
+        if (win) {
+            win.resize(box.width, box.height);
         }
     });
 }(library));

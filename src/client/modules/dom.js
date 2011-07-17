@@ -1,30 +1,30 @@
 /*global library, apply, hop, isHostMethod */
-(function(library){
+( function(library) {
     var on, un;
     if (isHostMethod(window, "addEventListener")) {
-        on = function(target, type, listener){
+        on = function(target, type, listener) {
             target.addEventListener(type, listener, false);
         };
-        un = function(target, type, listener, useCapture){
+        un = function(target, type, listener, useCapture) {
             target.removeEventListener(type, listener, useCapture);
         };
     }
     else if (isHostMethod(window, "attachEvent")) {
-        on = function(object, sEvent, fpNotify){
+        on = function(object, sEvent, fpNotify) {
             object.attachEvent("on" + sEvent, fpNotify);
         };
-        un = function(object, sEvent, fpNotify){
+        un = function(object, sEvent, fpNotify) {
             object.detachEvent("on" + sEvent, fpNotify);
         };
     }
     else {
         throw new Error("Browser not supported");
     }
-    
-    function create(spec, parent){
+
+    function create(spec, parent) {
         var tag = spec.tag || "div";
         var el = document.createElement(tag);
-        
+
         for (var key in spec) {
             if (hop.call(spec, key)) {
                 switch (key) {
@@ -55,8 +55,8 @@
         }
         return el;
     }
-    
-    function getViewportSize(){
+
+    function getViewportSize() {
         if ("innerWidth" in window) {
             return {
                 width: window.innerWidth,
@@ -73,10 +73,10 @@
             width: document.body.clientWidth,
             height: document.body.clientHeight
         };
-        
+
     }
-    
-    function getSize(el){
+
+    function getSize(el) {
         if (!el) {
             return getViewportSize();
         }
@@ -91,12 +91,12 @@
             height: el.clientHeight
         };
     }
-    
+
     library.provide("dom", {
         on: on,
         un: un,
         create: create,
         getSize: getSize
     });
-    
+
 }(library));
